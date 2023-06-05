@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "../gMockTest/DeviceDriver.cpp"
+#include "../gMockTest/App.cpp"
 #include <ctime>
 #include <vector>
 
@@ -88,5 +89,33 @@ TEST(TestCaseName, TCOverWrite)
 	DeviceDriver driver(&mockDevice);
 	driver.write(0xA, 100);
 	EXPECT_THROW(driver.write(0xA, 120), std::exception);
+}
+
+TEST(TestCaseName, TCAppReadAndPrint)
+{
+	FlashMemoryDeviceMock mockDevice;
+
+	EXPECT_CALL(mockDevice, read(_))
+		.Times(25) // for behavior verification
+		.WillRepeatedly(Return(0xFF));
+
+	DeviceDriver driver(&mockDevice);
+	App app(&driver);
+	app.ReadAndPrint(0, 4);
+}
+
+TEST(TestCaseName, TCAppWriteAll)
+{
+	FlashMemoryDeviceMock mockDevice;
+
+	EXPECT_CALL(mockDevice, read(_))
+		.Times(5) // for behavior verification
+		.WillRepeatedly(Return(0xFF));
+	EXPECT_CALL(mockDevice, write(_,_))
+		.Times(5); // for behavior verification
+
+	DeviceDriver driver(&mockDevice);
+	App app(&driver);
+	app.WriteAll(55);
 }
 
