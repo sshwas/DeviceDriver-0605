@@ -24,6 +24,9 @@ int DeviceDriver::read(long address)
 
 void DeviceDriver::write(long address, int data)
 {
-    // TODO: implement this method
+	int value = (int)(m_hardware->read(address));
+	if (value != 0xFF)
+		throw std::invalid_argument("over-write");
+
     m_hardware->write(address, (unsigned char)data);
 }
