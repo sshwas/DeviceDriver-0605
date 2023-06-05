@@ -59,3 +59,34 @@ TEST(TestCaseName, TCReadException)
 	DeviceDriver driver(&mockDevice);
 	EXPECT_THROW(driver.read(0xA), std::exception);
 }
+
+
+TEST(TestCaseName, TCWrite)
+{
+	FlashMemoryDeviceMock mockDevice;
+
+	EXPECT_CALL(mockDevice, read)
+		.Times(1) // for behavior verification
+		.WillOnce(Return(0xFF));
+
+	DeviceDriver driver(&mockDevice);
+	driver.write(0xA, 100);
+}
+
+TEST(TestCaseName, TCOverWrite)
+{
+	FlashMemoryDeviceMock mockDevice;
+
+	EXPECT_CALL(mockDevice, write)
+		.Times(1); // for behavior verification
+
+	EXPECT_CALL(mockDevice, read)
+		.Times(2) // for behavior verification
+		.WillOnce(Return(0xFF))
+		.WillOnce(Return(100));
+
+	DeviceDriver driver(&mockDevice);
+	driver.write(0xA, 100);
+	EXPECT_THROW(driver.write(0xA, 120), std::exception);
+}
+
